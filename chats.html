@@ -1,0 +1,259 @@
+{% extends 'home.html' %}
+{% block title %}Chats - {% endblock %}
+{% block content %}
+<!-- <style>
+	.message-container{
+		overflow-y: scroll;
+	}
+</style> -->
+<div class="container-fluid flex-initial w-full h-100">
+	<div class="row flex items-start items-stretch h-100">
+		<div class="col-3 bg-white h-100 items-stretch w-full pl-0 pr-0 border-right text-gray-950 rounded-xl">
+			<div class="col h-100 items-stretch pl-0">
+				<div class="row border-bottom">
+					<div class="col px-5 py-3 font-bold lead">People</div>
+				</div>
+				
+				{% if users %}
+					{% for user in users %}
+					<form id="post_form">
+						{% csrf_token %}
+						<div class="row border-bottom">
+							<div class="col px-5 py-2"><input type = "submit" class="btn shadow-none font-semibold" value="{{user|capfirst}}" id="{{forloop.counter}}"></div>
+						</div>
+					</form>
+					{% endfor %}
+				{% endif %}
+				
+			</div>
+		</div>
+		<div class="col-9 h-100 bg-white items-stretch w-full border-top rounded-xl">
+			<div class="h-100 items-stretch w-full">
+				<div class="col h-100 items-stretch pl-0 pr-0 w-full" id="show_chat">
+					<div class="d-flex col h-100 text-gray-950 w-full items-stretch pl-0 pr-0 font-semibold text-center align-items-center justify-content-center itallic text-2xl">
+						Kanect<br>Be in touch with your favourite people
+						</div>
+				</div>
+			</div>
+			</div>
+		</div>
+	</div>
+</div>
+<input type="hidden" id="clicked_button" name="clicked_button" value="">
+<form id='interval' method="POST">{% csrf_token %}</form>
+<script type="text/javascript">
+	var buttonClicked = ''
+	$("#post_form input[type = 'submit']").click(function(e){
+	 buttonClicked = $(this).val().toLowerCase();
+	})
+	$(document).on('submit', '#post_form', function(e) {
+		e.preventDefault();
+		var clickedButton = buttonClicked
+		$.ajax({
+			type : 'POST',
+			url: '/user-chat/',
+			data:{
+				username:clickedButton,
+				csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken').val(),
+			},
+			success: function(data) {
+				for (var i in data) {
+					console.log(data[i])
+				}
+
+			    // Update the HTML content of the chat area
+	            if (data.messages){
+	            	var chatHTML = `
+    <div class="row" style="height:89vh">
+        <!-- First row: Username -->
+        <div class="col-12 lead font-semibold px-5 mb-0 pt-3 border-bottom" style="height:10%"><p id="chat_with">${data.user}</p></div>
+        <!-- Second row: Messages -->
+        <div class="col-12 overflow-auto" style="height:83%;">
+            <div class="d-flex flex-column message-container" id="second_row">
+                <!-- Iterate through messages and display -->
+                ${data.messages.map(message => `
+                    <div class="card mb-3">
+                        <div class="card-body message-container">
+                        	<p class="card-text small text-muted">${message.sent_by}</p>
+                            <p class="card-text">${message.message}</p>
+                            <p class="card-text small text-muted">${message.time}</p>
+                        </div>
+                    </div>`).join('')}
+            </div>
+        </div>
+        <!-- Third row: Textbox and Send Button -->
+        <div class="col-12" style="height:7%">
+            <div class="row">
+                <div class="col-11 w-full pr-0 pl-0">
+                    <input type="text" class="form-control border-0 shadow-none" placeholder="Type your message" id="type_message">
+                </div>
+                <div class="col-1 w-full pl-0">
+                    <form id="form_send" method="POST">
+                        {% csrf_token %}
+                        <input type="submit" class="btn btn-primary w-full" id="send_message" value="Send">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+`;
+				    $('#show_chat').html(chatHTML);
+				    
+				}
+				else{
+					var chatHTML2 = `
+						<div class="row h-full">
+	                        <div class="col-12 lead font-semibold px-5 pt-3 mb-0 border-bottom" style = "height:10%" ><p id="chat_with">${data.user}</p></div>
+	                        <!-- Adjust classes as needed -->
+	                    	<!-- Second row -->
+		                    <div class="col-12 flex items-center justify-center" style = "height:83%" id="second_row">
+		                        Send a message to start conversation
+		                    </div>
+		                    <!-- Third row -->
+		                    <div class="col-12" style = "height:7%">
+		                    	<div class="row">
+			                        <div class="col-11 w-full pr-0 pl-0">
+			                            <input type="text" class="form-control border-0 shadow-none" placeholder="Type your message" id="type_message">
+			                        </div>
+			                        <div class="col-1 w-full pl-0">
+			                        	<form id="form_send" method="POST">
+										{% csrf_token %}
+			                            <input type="submit" class="btn btn-primary w-full" id="send_message" value="Send">
+			                            </form>
+			                        </div>
+			                    </div>
+		                    </div>
+	                    </div>`
+					$('#show_chat').html(chatHTML2);
+					
+				}
+			},
+		});
+	});
+
+	$(document).ready(function(){
+		
+		
+		
+
+			setInterval(function(){
+				user = $('#chat_with').text()
+				console.log(user)
+				if (user != '') {
+				    $.ajax({
+				        type: 'POST',
+				        url : "/user-chat/",
+				        data:{
+							username:$('#chat_with').text().toLowerCase(),
+							
+						},
+				        success: function(data) {
+						for (var i in data) {
+							console.log(data[i])
+						}
+
+					    // Update the HTML content of the chat area
+			            if (data.messages){
+			            	var chatHTML = `
+					        <!-- Second row: Messages -->
+					        
+					                <!-- Iterate through messages and display -->
+					                ${data.messages.map(message => `
+					                    <div class="card mb-3">
+					                        <div class="card-body message-container">
+					                        	<p class="card-text small text-muted">${message.sent_by}</p>
+					                            <p class="card-text">${message.message}</p>
+					                            <p class="card-text small text-muted">${message.time}</p>
+					                        </div>
+					                    </div>`).join('')}
+					            </div>
+					        </div>
+					        
+					`;
+						    $('#second_row').html(chatHTML);
+
+						    
+						}
+						else{
+							var chatHTML2 = `
+								
+			                    	<!-- Second row -->
+				                    <div class="col-12 flex items-center justify-center" style = "height:83%" id="second_row">
+				                        Send a message to start conversation
+				                    </div>
+				                    `
+							$('#second_row').html(chatHTML2);
+						}
+						
+
+					},
+				    });
+				}
+			},1000);
+		
+	})
+	
+	
+</script>
+<script type="text/javascript">
+	$(document).on('submit', '#form_send', function(e) {
+    e.preventDefault();
+    // AJAX call to send the message
+    $.ajax({
+        type: 'POST',
+        url: '/send-message/', // Replace with your endpoint
+        data: {
+            username: $('#chat_with').text().toLowerCase(),
+            message: $('#type_message').val(),
+            csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+        },
+        success: function(data) {
+            console.log(data.messages)
+            var chatHTML = `
+			    <div class="row" style="height:89vh">
+        <!-- First row: Username -->
+        <div class="col-12 lead font-semibold px-5 mb-0 pt-3 border-bottom" style="height:10%"><p id="chat_with">${data.user}</p></div>
+        <!-- Second row: Messages -->
+        <div class="col-12 overflow-auto" style="height:83%;">
+            <div class="d-flex flex-column message-container" id="second_row">
+                <!-- Iterate through messages and display -->
+                ${data.messages.map(message => `
+                    <div class="card mb-3">
+                        <div class="card-body">
+                        <p class="card-text small text-muted">${message.sent_by}</p>
+                            <p class="card-text">${message.message}</p>
+                            <p class="card-text small text-muted">${message.time}</p>
+                        </div>
+                    </div>`).join('')}
+            </div>
+        </div>
+        <!-- Third row: Textbox and Send Button -->
+        <div class="col-12" style="height:7%">
+            <div class="row">
+                <div class="col-11 w-full pr-0 pl-0">
+                    <input type="text" class="form-control border-0 shadow-none" placeholder="Type your message" id="type_message">
+                </div>
+                <div class="col-1 w-full pl-0">
+                    <form id="form_send" method="POST">
+                        {% csrf_token %}
+                        <input type="submit" class="btn btn-primary w-full" id="send_message" value="Send">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+`;
+
+		    $('#show_chat').html(chatHTML);
+		    
+        },
+        error: function(error) {
+            // Handle error response here
+            console.error('Error sending message:', error);
+        },
+    });
+    $('#type_message').val('');
+});
+
+</script>
+{% endblock %}

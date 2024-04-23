@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>{% block title %}{% endblock %}Kanect</title>
+
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"> 
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> 
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script> 
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+	<link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
+
+</head>
+<body class="h-screen bg-gray-900 d-flex flex-col">
+	<nav class="w-full bg-gray-900 text-white flex justify-between items-center">
+		<a href="#" class="inline-block text-5xl pl-6 hover:no-underline hover:text-6xl" style="font-family: cursive;">Kanect</a>
+		{% if request.path != '/login/' and request.path != '/' %}
+			<a class="inline-block rounded-xl bg-primary px-3 py-2 hover:bg-blue-800 text-white" href="/logout">Logout</a>
+		{% endif %}
+	</nav>
+	{% block content %}
+	{% endblock %}
+</body>
+</html>

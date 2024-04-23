@@ -1,0 +1,56 @@
+{% extends 'home.html' %}
+{% block title %}Login - {% endblock %}
+{% block content %}
+<div class="container-fluid d-flex justify-content-center align-items-center text-white">
+	<div class="container">
+		<div class="row align-items-center">
+			<div class="col-3"></div>
+			<div class="col-6">
+			  	<form class="align-self-center" method="POST" action="">
+			  		{% csrf_token %}
+			  		<div class="form-group row pt-20">
+				  		<div class="col-5"></div>
+				  		<div class="col-7">
+				    		<h1 class="display-4 font-bold pb-8">Login</h1>
+				    	</div>
+				  	</div>
+				  	<div class="form-group row">
+				    	<label for="username" class="col-sm-2 col-form-label" required>Username</label>
+				    	<div class="col-sm-10">
+				      		<input type="text" class="form-control" name="username" id="username" placeholder="Enter Username">
+				    	</div>
+				  	</div>
+				  	<div class="form-group row">
+				    	<label for="password" class="col-sm-2 col-form-label" required>Password</label>
+				    	<div class="col-sm-10">
+				      		<input type="password" class="form-control" name="password" id="password" placeholder="Enter Password">
+				    	</div>
+				  	</div>
+				  	<div class="form-group row">
+				  		<div class="col-2"></div>
+				  		<div class="col-8">
+				    		Don't have account?<a href="/" class="text-blue-600 font-bold hover:no-underline"> Register</a>
+				    	</div>
+					    <div class="col-2"></div>
+				  	</div>
+				  	<div class="form-group row">
+				  		<div class="col-6"></div>
+				  		<div class="col-6">
+				    		<input type="submit" value="Submit" class="bg-primary text-white rounded-xl px-3 py-2">
+				    	</div>
+				  	</div>
+				  	{% if error %}
+					  	<div class="form-group row">
+					  		<div class="col-4"></div>
+					  		<div class="col-8">
+					    		<h1 class="text-danger font-semibold inline-block pr-2">{{error}} </h1><a href="/" class="inline-block underline"> SignUp</a>
+					    	</div>
+					  	</div>
+					{% endif %}
+				</form>
+			</div>
+			<div class="col-3"></div>
+		</div>
+	</div>
+</div>
+{% endblock %}
